@@ -31,6 +31,13 @@ int SimpleROFile::getFilePermissions() {
 	return 0444;
 }
 
+void SimpleROFile::setContent(std::string const& _content) {
+	auto lock = this->lock();
+	content = _content;
+}
+std::string const& SimpleROFile::getContent() const {
+	return content;
+}
 int SimpleWOFile::onTruncate(off_t) {
 	return 0;
 }

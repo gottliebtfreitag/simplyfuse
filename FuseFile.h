@@ -4,6 +4,8 @@
 #include <iterator>
 #include <unistd.h>
 
+#include <mutex>
+
 namespace simplyfuse {
 
 struct FuseFS;
@@ -32,12 +34,21 @@ protected:
 };
 
 struct SimpleROFile : FuseFile {
-	std::string content;
 	using FuseFile::FuseFile;
 	SimpleROFile(std::string const& _content="") : content(_content) {};
 	virtual ~SimpleROFile() = default;
 	int onRead(char* buf, std::size_t size, off_t offset) override;
 	int getFilePermissions() override;
+
+	void setContent(std::string const& content);
+	std::string const& getContent() const;
+
+	std::unique_lock<std::mutex> lock() const {
+		return std::unique_lock{mutex};
+	}
+protected:
+	mutable std::mutex mutex;
+	std::string content;
 };
 
 struct SimpleWOFile : FuseFile {
