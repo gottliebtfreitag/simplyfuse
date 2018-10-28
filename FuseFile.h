@@ -5,6 +5,7 @@
 #include <unistd.h>
 
 #include <mutex>
+#include <functional>
 
 namespace simplyfuse {
 
@@ -35,7 +36,9 @@ protected:
 
 struct SimpleROFile : FuseFile {
 	using FuseFile::FuseFile;
-	SimpleROFile(std::string const& _content="") : content(_content) {};
+	using ReadCallback = std::function<std::string(void)>;
+
+	SimpleROFile(std::string const& _content="", ReadCallback readCallback={}) : content{_content}, readCB{readCallback} {};
 	virtual ~SimpleROFile() = default;
 	int onRead(char* buf, std::size_t size, off_t offset) override;
 	int getFilePermissions() override;
@@ -49,6 +52,7 @@ struct SimpleROFile : FuseFile {
 protected:
 	mutable std::mutex mutex;
 	std::string content;
+	ReadCallback readCB{};
 };
 
 struct SimpleWOFile : FuseFile {

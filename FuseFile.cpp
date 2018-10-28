@@ -22,6 +22,9 @@ int FuseFile::getFilePermissions() {
 }
 
 int SimpleROFile::onRead(char* buf, std::size_t size, off_t) {
+	if (readCB) {
+		content = readCB();
+	}
 	size = std::min(size, content.size()+1);
 	std::memcpy(buf, content.data(), size);
 	return size;
