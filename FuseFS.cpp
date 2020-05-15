@@ -139,6 +139,7 @@ FuseFS::FuseFS(std::filesystem::path const& mountPoint) :
 	};
 	struct fuse_args fuse_args = {2, args, false};
 	pimpl->channel = fuse_mount(pimpl->mountPoint.c_str(), &fuse_args);
+    fuse_opt_free_args(&fuse_args);
 	if (not pimpl->channel) {
 		throw MountError("cannot mount");
 	}
