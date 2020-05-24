@@ -197,7 +197,7 @@ void FuseFS::unregisterFile(FuseFile& file) {
 	std::lock_guard lock{pimpl->mutex};
 	file.fuseFS = nullptr;
 	auto range = pimpl->filesInvMap.equal_range(&file);
-	std::for_each(range.first, range.second, [=] (auto const& p) {
+	std::for_each(range.first, range.second, [this] (auto const& p) {
 		pimpl->files.erase(p.second);
 		destroyNode(p.second);
 	});
